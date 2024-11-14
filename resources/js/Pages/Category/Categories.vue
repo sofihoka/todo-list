@@ -54,8 +54,10 @@ let draggedIndex = null;
       draggedIndex = index;
     }
 
+    const emit = defineEmits(['dragsTask'])
+
     function onDragOver(event) {
-        this.$emit('dragstart', "soyUnTasks")
+        emit('dragsTask', "soyUnTasks")
         console.log("Tasssssk")
       event.preventDefault();
     }
