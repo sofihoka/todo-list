@@ -10,6 +10,8 @@ list app like trello (PHP laravel tailwind Vue3 Inertia)
 7. extension Remote development(Remote - SSH)
 8. install laravel
     estudie un poco de laravel, las rutas, y la migracion de la base de datos.
+   npm run dev(command to run vite, para que se actualize cada vez q se hace un cambio ?))
+   php artisan server (para levantar la pag)
 10. (first use laravel'sviews (.blade)
 11. install Vue3 e intertia (with Laravel Jetstream)
 12. pase todo a Vue3
