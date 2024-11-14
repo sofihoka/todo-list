@@ -13,4 +13,7 @@ list app like trello (PHP laravel tailwind Vue3 Inertia)
 10. (first use laravel'sviews (.blade)
 11. install Vue3 e intertia (with Laravel Jetstream)
 12. pase todo a Vue3
+13. instalamos axios para poder hacer el dragAndDrop con vue y javascript y poder hacer el post desde ahi, no se si se puede con inertia
+14. npm install @vueuse/core
+15. npm install axios
     
