@@ -33,20 +33,18 @@ defineProps(['categories'])
 
     let draggedIndex = null;
     let isTask =false;
+
+    const dragsTask = () =>{
+      console.log("dragsTask");
+      isTask=true;
+    }
     const startDrag = (index) =>{
-      console.log("startDrag: "+index);
       draggedIndex = index;
     }
 
     function onDragOver(event) {
-      console.log("index");
       event.preventDefault();
     }
-
-    function onDropTask(){
-      console.log("acaaaaa")
-      isTask=true;
-    } 
 
 function onDrop(index,categories) {
   if (draggedIndex !== null && draggedIndex !== index && isTask==false) {
@@ -80,6 +78,7 @@ function onDrop(index,categories) {
               :categoryid="category.id"
               :name="category.name"
               draggable="true"
+              @dragsTask="dragsTask"
               @dragstart="startDrag(index)"
               @dragover.prevent="onDragOver"
               @drop="onDrop(index,categories)"
