@@ -49,15 +49,18 @@ function submit() {
 };
 
 let draggedIndex = null;
-    const startDrag = (index) =>{
+
+    const emit = defineEmits(['dragsTask'])
+
+    const startDrag = (index, categoryid) =>{
+        console.log("categoryid: "+categoryid);
+        emit('dragsTask', categoryid)
       console.log("startDrag: "+index);
       draggedIndex = index;
     }
 
-    const emit = defineEmits(['dragsTask'])
 
-    function onDragOver(event) {
-        emit('dragsTask', "soyUnTasks")
+    function onDragOver(event) { 
         console.log("Tasssssk")
       event.preventDefault();
     }
@@ -101,7 +104,7 @@ function onDrop(index,tasks,task,categoryid) {
             <!-- @foreach($category->taskds as $task)-->
             <form v-for=" (task, index) in tasks"
                     draggable="true"
-                    @dragstart="startDrag(index)"
+                    @dragstart="startDrag(index, categoryid)"
                     @dragover.prevent="onDragOver"
                     @drop="onDrop(index,tasks,task,categoryid)">
                 <div class="bg-slate-100 grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
