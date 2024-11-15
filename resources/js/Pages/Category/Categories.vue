@@ -2,8 +2,7 @@
 import { Inertia } from '@inertiajs/inertia';
 import { useForm } from '@inertiajs/vue3'
 import { router } from '@inertiajs/vue3'
-import { reactive } from 'vue'
-
+import { reactive ,getCurrentInstance  } from 'vue'
 
 
 const destroy = (categoryid) =>{
@@ -50,10 +49,21 @@ function submit() {
 
 let draggedIndex = null;
 
-    const emit = defineEmits(['dragsTask'])
+const emit = defineEmits(['dragsTask'])
 
-    const startDrag = (index, categoryid) =>{
-        console.log("categoryid: "+categoryid);
+// Ahora puedes usar axios a través de app.config.globalProperties
+const internalInstance = getCurrentInstance();
+const axios = internalInstance.appContext.config.globalProperties.$axios;
+
+    const startDrag = (index, categoryId, taskId) =>{
+        console.log(categoryid);
+
+        axios.put('/panel_index', { taskId: taskId, categoryId: categoryId }).then((response) => {
+            console.log("Recurso actualizado con éxito", response.data);
+            }).catch((error) => {
+            console.error("Error al actualizar el recurso: ", error);
+            });
+            
         emit('dragsTask', categoryid)
       console.log("startDrag: "+index);
       draggedIndex = index;
@@ -61,7 +71,6 @@ let draggedIndex = null;
 
 
     function onDragOver(event) { 
-        console.log("Tasssssk")
       event.preventDefault();
     }
 
