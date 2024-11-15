@@ -60,13 +60,13 @@ class TaskController extends Controller
         $taskId = $request->input('task'); 
         $category_id = $request->input('category_id'); 
         $panelid = $request->input('panelid');
-        
+
         $task = Task::find($taskId);
         $task->category_id = $category_id;
+        $task ->save();
         // Lógica adicional..
-
-
-        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);           
+        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
+        //return Inertia::location(route('category', ['id' => $panelid]));            
 
     }
 }

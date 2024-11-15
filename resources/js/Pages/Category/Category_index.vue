@@ -49,7 +49,6 @@ defineProps(['categories'])
     }
 
 function onDrop(index,categories,category,panelid) {
-  console.log("onDrop parent" +category)
   if (draggedIndex !== null && draggedIndex !== index && isTask==false) {
     const draggedItem = categories[draggedIndex];
     categories.splice(draggedIndex, 1); 
@@ -57,6 +56,7 @@ function onDrop(index,categories,category,panelid) {
   }else{    
     axios.put('/category/editCategoryTask', { task: taskId, category_id: category, panelid : panelid }).then((response) => {
             console.log("Recurso actualizado con éxito", response.data);
+            window.location.reload()
             }).catch((error) => {
             console.error("Error al actualizar el recurso: ", error);
             });
