@@ -57,10 +57,16 @@ class TaskController extends Controller
     //Delete
     public function changeTaskCategory(Request $request)
     {
-      $category = Category::findOrFail($category_id);
-    // Lógica adicional...
+        $taskId = $request->input('task'); 
+        $category_id = $request->input('category_id'); 
+        $panelid = $request->input('panelid');
+        
+        $task = Task::find($taskId);
+        $task->category_id = $category_id;
+        // Lógica adicional..
 
-    return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);           
+
+        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);           
 
     }
 }
