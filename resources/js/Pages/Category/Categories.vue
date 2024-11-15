@@ -55,17 +55,10 @@ const emit = defineEmits(['dragsTask'])
 const internalInstance = getCurrentInstance();
 const axios = internalInstance.appContext.config.globalProperties.$axios;
 
-    const startDrag = (index, categoryId, taskId) =>{
-        console.log(categoryid);
-
-        axios.put('/panel_index', { taskId: taskId, categoryId: categoryId }).then((response) => {
-            console.log("Recurso actualizado con éxito", response.data);
-            }).catch((error) => {
-            console.error("Error al actualizar el recurso: ", error);
-            });
-            
-        emit('dragsTask', categoryid)
-      console.log("startDrag: "+index);
+    const startDrag = (index, task_id) =>{
+        //console.log("drap category" +category_id)
+        emit('dragsTask', task_id)
+     // console.log("startDrag: "+index);
       draggedIndex = index;
     }
 
@@ -74,9 +67,7 @@ const axios = internalInstance.appContext.config.globalProperties.$axios;
       event.preventDefault();
     }
 
-function onDrop(index,tasks,task,categoryid) {
-    //console.log("category: "+categoryid)
-    //console.log("task: "+ console.log(JSON.stringify(task)));
+function onDrop(index,tasks,category_id) {
   if (draggedIndex !== null && draggedIndex !== index) {
     const draggedItem = tasks[draggedIndex];
     tasks.splice(draggedIndex, 1); 
@@ -113,9 +104,9 @@ function onDrop(index,tasks,task,categoryid) {
             <!-- @foreach($category->taskds as $task)-->
             <form v-for=" (task, index) in tasks"
                     draggable="true"
-                    @dragstart="startDrag(index, categoryid)"
+                    @dragstart="startDrag(index,task.id)"
                     @dragover.prevent="onDragOver"
-                    @drop="onDrop(index,tasks,task,categoryid)">
+                    @drop="onDrop(index,tasks,categoryid)">
                 <div class="bg-slate-100 grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
                     <div class="col-span-5">
                         {{ task.description }}
