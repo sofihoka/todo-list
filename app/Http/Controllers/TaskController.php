@@ -50,8 +50,17 @@ class TaskController extends Controller
 
         $task->delete();
 
-        return Inertia::location(route('category', ['id' => $panelId]));
-           
+        return Inertia::location(route('category', ['id' => $panelId]));          
+
+    }
+
+    //Delete
+    public function changeTaskCategory(Request $request)
+    {
+      $category = Category::findOrFail($category_id);
+    // Lógica adicional...
+
+    return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);           
 
     }
 }

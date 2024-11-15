@@ -42,7 +42,7 @@ Route::middleware([
     Route::post('/create_category', [CategoryController::class, 'store'])->name('create_category');
 
     Route::delete('/delete_category/{id}', [CategoryController::class, 'destroy'])->name('delete_category');
-    
+
     //Route::post('/create_category', [CategoryController::class, 'index'])->name('create_category');
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,4 +51,7 @@ Route::middleware([
 
     Route::delete('/delete_task/{id}', [TaskController::class, 'destroy'])->name('delete_task');
     
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    Route::put('/category/editCategoryTask', [TaskController::class, 'changeTaskCategory'])->name('edit.category.task');
 });

@@ -35,8 +35,9 @@ defineProps(['categories'])
     let isTask =false;
 
     const dragsTask = (categoryid) =>{
-      console.log("dragsTask" + categoryid);
       isTask=true;
+      console.log("dragsTask" + categoryid);
+      //must to save a categoryId to Task
     }
     const startDrag = (index) =>{
       draggedIndex = index;
