@@ -54,8 +54,10 @@ const emit = defineEmits(['dragsTask'])
 // Ahora puedes usar axios a través de app.config.globalProperties
 const internalInstance = getCurrentInstance();
 const axios = internalInstance.appContext.config.globalProperties.$axios;
+let taskDragId = null
 
     const startDrag = (index, task_id) =>{
+        taskDragId = task_id
         //console.log("drap category" +category_id)
         emit('dragsTask', task_id)
      // console.log("startDrag: "+index);
@@ -67,12 +69,19 @@ const axios = internalInstance.appContext.config.globalProperties.$axios;
       event.preventDefault();
     }
 
-function onDrop(index,tasks,category_id) {
+function onDrop(index,tasks,order,taskid) {
+    console.log("taskDragId "+ taskDragId,"taskid: "+taskid)
   if (draggedIndex !== null && draggedIndex !== index) {
     const draggedItem = tasks[draggedIndex];
     tasks.splice(draggedIndex, 1); 
     tasks.splice(index, 0, draggedItem); 
   }
+  axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid}).then((response) => {
+        console.log("Recurso actualizado con éxito", response.data);
+          //window.location.reload()
+        }).catch((error) => {
+        console.error("Error al actualizar el recurso: ", error);
+        });
   draggedIndex = null;
 }
 
@@ -101,25 +110,27 @@ function onDrop(index,tasks,category_id) {
             </div>
             <!-- End Form to Delete -->    
         </div>
-            <!-- @foreach($category->taskds as $task)-->
-            <form v-for=" (task, index) in tasks"
-                    draggable="true"
-                    @dragstart="startDrag(index,task.id)"
-                    @dragover.prevent="onDragOver"
-                    @drop="onDrop(index,tasks,categoryid)">
-                <div class="bg-slate-100 grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
-                    <div class="col-span-5">
-                        {{ task.description }}
+            <!-- @foreach($category->taskds as $task)
+            <TransitionGroup name="taskList">-->
+                <form v-for=" (task, index) in tasks"
+                        draggable="true"
+                        @dragstart="startDrag(index,task.id)"
+                        @dragover.prevent="onDragOver"
+                        @drop="onDrop(index,tasks,task.order, task.id)">
+                    <div class="bg-slate-100 taskList grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
+                        <div class="col-span-5">
+                            {{ task.description }}
+                        </div>
+                        <div class="place-self-end">
+                            <button @click="destroyTask(task.id)" class="text-stone-500 font-bold  rounded focus:outline-none focus:shadow-outline" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                                </svg>
+                            </button>
+                        </div>    
                     </div>
-                    <div class="place-self-end">
-                        <button @click="destroyTask(task.id)" class="text-stone-500 font-bold  rounded focus:outline-none focus:shadow-outline" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-                            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-                            </svg>
-                        </button>
-                    </div>    
-                </div>
-            </form>
+                </form>
+            <!--</TransitionGroup>-->
             <!--  @endforeach-->   
             <!-- Form to Add Task -->
             <form  @submit.prevent="submit()" >

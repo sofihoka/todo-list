@@ -29,7 +29,6 @@
 
 const typeFather= 'Category';
 const routeFather= '/create_category'
-defineProps(['categories'])
 
     let draggedIndex = null
     let isTask =false
@@ -40,27 +39,39 @@ defineProps(['categories'])
       taskId = task_id;
       //must to save a categoryId to Task
     }
-    const startDrag = (index) =>{
+
+    let categoryDrag= null;
+    const startDrag = (index, categoryDrag1) =>{
       draggedIndex = index;
+      categoryDrag = categoryDrag1;
     }
 
     function onDragOver(event) {
       event.preventDefault();
     }
 
+
 function onDrop(index,categories,category,panelid) {
   if (draggedIndex !== null && draggedIndex !== index && isTask==false) {
     const draggedItem = categories[draggedIndex];
     categories.splice(draggedIndex, 1); 
     categories.splice(index, 0, draggedItem); // Insertarlo en la nueva posición
-  }else{    
-    axios.put('/category/editCategoryTask', { task: taskId, category_id: category, panelid : panelid }).then((response) => {
-            console.log("Recurso actualizado con éxito", response.data);
-            window.location.reload()
-            }).catch((error) => {
-            console.error("Error al actualizar el recurso: ", error);
-            });
+  }else{ 
+    /*changed the "category" of the "tasks" */ 
+    console.log(category);
+    if(category != categoryDrag){
+      axios.put('/category/editCategoryTask', { task: taskId, category_id: category, panelid : panelid }).then((response) => {
+        console.log("Recurso actualizado con éxito", response.data);
+          window.location.reload()
+        }).catch((error) => {
+        console.error("Error al actualizar el recurso: ", error);
+        });
+    }
+
+
   }
+
+  categoryDrag = null;
   draggedIndex = null;
   taskId = null;
   isTask =false;
@@ -89,7 +100,7 @@ function onDrop(index,categories,category,panelid) {
               :name="category.name"
               draggable="true"
               @dragsTask="dragsTask"
-              @dragstart="startDrag(index)"
+              @dragstart="startDrag(index, category.id)"
               @dragover.prevent="onDragOver"
               @drop="onDrop(index,categories, category.id,panelid)"
       ></Categories>    

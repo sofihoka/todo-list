@@ -11,9 +11,11 @@ use Inertia\Inertia;
 class CategoryController extends Controller
 {
     public function index($panelid){
-        $panel = Panel::with('categories.tasks')->findOrFail($panelid);        
-        $panelName = $panel ->name;
+        $panel = Panel::with('categories.tasks')->findOrFail($panelid);
+        //dd($panel);
+        $panelName = $panel -> name;
         $categories = $panel->categories;
+        
 
         $panelid = intval($panelid); 
           return Inertia::render('Category/Category_index', [
