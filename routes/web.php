@@ -54,4 +54,6 @@ Route::middleware([
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     Route::put('/category/editCategoryTask', [TaskController::class, 'changeTaskCategory'])->name('edit.category.task');
+
+    Route::put('/category/editOrderTask', [TaskController::class, 'editOrderTask'])->name('edit.Order.task');
 });

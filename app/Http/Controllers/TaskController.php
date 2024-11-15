@@ -12,7 +12,7 @@ class TaskController extends Controller
 {
     //Mostrar todas las tareas
     public function index(){
-        $task = Task::all();
+        $task = Task::all()->orderBy('order', 'asc');
         return view('task.index', compact(task));
     }
 
@@ -34,9 +34,15 @@ class TaskController extends Controller
     $panelid = $request ->input('panelid');
         //Task::create($request->all());
         //dd($category);
+        $maxOrder = Task::where('category_id', $category)->max('order');
+        if( $maxOrder == null){
+            $maxOrder=1;
+        }else{
+            $maxOrder++;
+        }
         Task::create(['description'=>$request->input('description'),
-                    'category_id'=>$category]);
-
+        'category_id'=>$category,
+        'order'=>$maxOrder]);
         
         return Inertia::location(route('category', ['id' => $panelid]));
     }
@@ -54,7 +60,6 @@ class TaskController extends Controller
 
     }
 
-    //Delete
     public function changeTaskCategory(Request $request)
     {
         $taskId = $request->input('task'); 
@@ -62,11 +67,31 @@ class TaskController extends Controller
         $panelid = $request->input('panelid');
 
         $task = Task::find($taskId);
+        $task_category =  $task->category_id;
         $task->category_id = $category_id;
         $task ->save();
-        // Lógica adicional..
-        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
+
+        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente' , 'category_id' => $task_category]);
         //return Inertia::location(route('category', ['id' => $panelid]));            
 
     }
+
+    public function editOrderTask(Request $request)
+    { //{ taskDragId: taskDragId, index : index,  taskDropId : taskDropId}
+        $taskDragId = $request->input('taskDragId'); 
+        $taskDropId = $request->input('taskDropId'); 
+        $taskDrag = Task::find($taskDragId);
+        $taskDrop = Task::find($taskDropId);
+
+        $taskDropCreat = $taskDrop->created_at;
+        $taskDragCreat= $taskDrag->created_at;
+
+        $taskDrag->created_at = $taskDropCreat;
+        $taskDrop->created_at = $taskDragCreat;
+        $taskDrag ->save();
+        $taskDrop ->save();
+
+        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
+    }
+
 }

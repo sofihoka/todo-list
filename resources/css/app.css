@@ -5,3 +5,13 @@
 [x-cloak] {
     display: none;
 }
+
+.taskList-enter-active,
+.taskList-leave-active {
+  transition: all 0.5s ease;
+}
+.taskList-enter-from,
+.taskList-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
