@@ -74,30 +74,39 @@ class TaskController extends Controller
         $category_id = $request->input('category_id'); 
         $panelid = $request->input('panelid');
         $drogsTaskId = $request->input('drogsTaskId');
-
         $task = Task::find($taskId);
         $drogsTask = Task::find($drogsTaskId);
-
-        $tasks = Task::where('category_id', $category_id)->orderBy('order', 'asc')->get();
         
-        for ($i=$drogsTask->order - 1; $i < count($tasks); $i++) { 
-            $tasks[$i]->order = $tasks[$i]->order + 1;
-            $tasks[$i]->save();
+        $_order = $task->order;
+
+        if($drogsTaskId !=null){
+            $tasksNewCategory = Task::where('category_id',$drogsTask ->category_id)->orderBy('order', 'asc')->get();  
+            for ($i=($drogsTask->order) - 1; $i < count($tasksNewCategory); $i++) { 
+                $tasksNewCategory[$i]->order = $tasksNewCategory[$i]->order + 1;
+                $tasksNewCategory[$i]->save();
+            }
+            $task->order = $drogsTask ->order;
+        }else{
+            //later make a another way
+            $maxOrder = Task::where('category_id', $category_id)->max('order');
+            if( $maxOrder == null){
+                $maxOrder=1;
+            }else{
+                $maxOrder++;
+            }
+            $task->order = $maxOrder;
         }
-
-
-        $tasksDrag = Task::where('category_id', $task->category_id)->orderBy('order', 'asc')->get();
-        //dump($task->order);
-        for ($i=$task->order; $i < count($tasksDrag); $i++) { 
-            $tasksDrag[$i]->order = $tasksDrag[$i]->order - 1;
-            $tasksDrag[$i]->save();
+        
+        
+        $tasksDrog = Task::where('category_id', $task->category_id)->orderBy('order', 'asc')->get();
+        for ($i=$_order; $i < count($tasksDrog); $i++) { 
+            $tasksDrog[$i]->order = $tasksDrog[$i]->order - 1;
+            $tasksDrog[$i]->save();
         }
-
         $task_category =  $task->category_id;
         $task->category_id = $category_id;
-        $task->order = $drogsTask ->order;
+        $task ->save();
 
-       $task ->save();
 
         return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente' , 'category_id' => $task_category]);
         //return Inertia::location(route('category', ['id' => $panelid]));            
