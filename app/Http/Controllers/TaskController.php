@@ -80,16 +80,32 @@ class TaskController extends Controller
     { //{ taskDragId: taskDragId, index : index,  taskDropId : taskDropId}
         $taskDragId = $request->input('taskDragId'); 
         $taskDropId = $request->input('taskDropId'); 
+        $categoryid = $request->input('categoryid');
+
         $taskDrag = Task::find($taskDragId);
         $taskDrop = Task::find($taskDropId);
-
-        $taskDropOrder = $taskDrop->order;
         $taskDragOrder= $taskDrag->order;
-
+        $taskDropOrder = $taskDrop->order;
+        
+        $category = Category::with('tasks')->findOrFail($categoryid);
+        $category->load(['tasks' => function ($query) {
+            $query->orderBy('order', 'asc');
+        }]);
+        $tasks = $category->tasks;
         $taskDrag->order = $taskDropOrder;
-        $taskDrop->order = $taskDragOrder;
+        if($taskDragOrder>$taskDropOrder){
+          for ($i=$taskDropOrder-1; $i < $taskDragOrder-1; $i++) { 
+            $tasks[$i]->order = $tasks[$i]->order + 1;
+            $tasks[$i]->save();
+            }
+        }{
+            for ($i=$taskDragOrder; $i < $taskDropOrder; $i++) { 
+                $tasks[$i]->order = $tasks[$i]->order - 1;
+                $tasks[$i]->save();
+            }
+        }
+
         $taskDrag ->save();
-        $taskDrop ->save();
 
         return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
     }
