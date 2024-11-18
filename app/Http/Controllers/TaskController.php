@@ -73,11 +73,31 @@ class TaskController extends Controller
         $taskId = $request->input('task'); 
         $category_id = $request->input('category_id'); 
         $panelid = $request->input('panelid');
+        $drogsTaskId = $request->input('drogsTaskId');
 
         $task = Task::find($taskId);
+        $drogsTask = Task::find($drogsTaskId);
+
+        $tasks = Task::where('category_id', $category_id)->orderBy('order', 'asc')->get();
+        
+        for ($i=$drogsTask->order - 1; $i < count($tasks); $i++) { 
+            $tasks[$i]->order = $tasks[$i]->order + 1;
+            $tasks[$i]->save();
+        }
+
+
+        $tasksDrag = Task::where('category_id', $task->category_id)->orderBy('order', 'asc')->get();
+        //dump($task->order);
+        for ($i=$task->order; $i < count($tasksDrag); $i++) { 
+            $tasksDrag[$i]->order = $tasksDrag[$i]->order - 1;
+            $tasksDrag[$i]->save();
+        }
+
         $task_category =  $task->category_id;
         $task->category_id = $category_id;
-        $task ->save();
+        $task->order = $drogsTask ->order;
+
+       $task ->save();
 
         return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente' , 'category_id' => $task_category]);
         //return Inertia::location(route('category', ['id' => $panelid]));            

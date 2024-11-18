@@ -49,15 +49,18 @@ function submit() {
 
 let draggedIndex = null;
 
-const emit = defineEmits(['dragsTask'])
+const emit = defineEmits(['dragsTask','drogsTask'])
 
 // Ahora puedes usar axios a través de app.config.globalProperties
 const internalInstance = getCurrentInstance();
 const axios = internalInstance.appContext.config.globalProperties.$axios;
 let taskDragId = null
+let categoryDrag = null;
 
-    const startDrag = (index, task_id) =>{
+    const startDrag = (index, task_id, categoryid) =>{
+        console.log("dormiendooo: "+task_id);
         taskDragId = task_id
+        categoryDrag = categoryid
         //console.log("drap category" +category_id)
         emit('dragsTask', task_id)
      // console.log("startDrag: "+index);
@@ -70,19 +73,23 @@ let taskDragId = null
     }
 
 function onDrop(index,tasks,order,taskid, categoryid) {
-    console.log("taskDragId "+ taskDragId,"taskid: "+taskid)
-  if (draggedIndex !== null && draggedIndex !== index) {
-    const draggedItem = tasks[draggedIndex];
-    tasks.splice(draggedIndex, 1); 
-    tasks.splice(index, 0, draggedItem); 
-  }
-  axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
-        console.log("Recurso actualizado con éxito", response.data);
-          //window.location.reload()
+    if (draggedIndex !== null && draggedIndex !== index && categoryid == categoryDrag) {
+        const draggedItem = tasks[draggedIndex]
+        tasks.splice(draggedIndex, 1)
+        tasks.splice(index, 0, draggedItem)
+        
+        axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
+            console.log("Recurso actualizado con éxito", response.data)
+            //window.location.reload()
         }).catch((error) => {
-        console.error("Error al actualizar el recurso: ", error);
-        });
-  draggedIndex = null;
+            console.error("Error al actualizar el recurso: ", error)
+        })
+    }else{
+        emit('drogsTask', taskid)        
+    }
+
+  draggedIndex = null
+  categoryDrag=null
 }
 
 
@@ -114,7 +121,7 @@ function onDrop(index,tasks,order,taskid, categoryid) {
             <TransitionGroup name="taskList">-->
                 <form v-for=" (task, index) in tasks"
                         draggable="true"
-                        @dragstart="startDrag(index,task.id)"
+                        @dragstart="startDrag(index,task.id,categoryid)"
                         @dragover.prevent="onDragOver"
                         @drop="onDrop(index,tasks,task.order, task.id, categoryid)">
                     <div class="bg-slate-100 taskList grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
