@@ -33,11 +33,15 @@ const routeFather= '/create_category'
     let draggedIndex = null
     let isTask =false
     let taskId = null
+    let drogsTaskId = null
 
     const dragsTask = (task_id) =>{
       isTask=true;
       taskId = task_id;
-      //must to save a categoryId to Task
+    }
+
+    const drogsTask = (drogsTask_id) =>{
+      drogsTaskId = drogsTask_id;
     }
 
     let categoryDrag= null;
@@ -58,11 +62,10 @@ function onDrop(index,categories,category,panelid) {
     categories.splice(index, 0, draggedItem); // Insertarlo en la nueva posición
   }else{ 
     /*changed the "category" of the "tasks" */ 
-    console.log(category);
     if(category != categoryDrag){
-      axios.put('/category/editCategoryTask', { task: taskId, category_id: category, panelid : panelid }).then((response) => {
+      axios.put('/category/editCategoryTask', { task: taskId, drogsTaskId : drogsTaskId, category_id: category, panelid : panelid }).then((response) => {
         console.log("Recurso actualizado con éxito", response.data);
-          window.location.reload()
+        window.location.reload()
         }).catch((error) => {
         console.error("Error al actualizar el recurso: ", error);
         });
@@ -73,6 +76,7 @@ function onDrop(index,categories,category,panelid) {
 
   categoryDrag = null;
   draggedIndex = null;
+  drogsTaskId = null;
   taskId = null;
   isTask =false;
 }
@@ -100,6 +104,7 @@ function onDrop(index,categories,category,panelid) {
               :name="category.name"
               draggable="true"
               @dragsTask="dragsTask"
+              @drogsTask="drogsTask"
               @dragstart="startDrag(index, category.id)"
               @dragover.prevent="onDragOver"
               @drop="onDrop(index,categories, category.id,panelid)"
