@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -53,6 +54,13 @@ class TaskController extends Controller
         //$panel = Panel::with('categories.tasks')->findOrFail($panelid);  
         $task = Task::find($id);
         $panelId = $task->category->panel->id ?? null;
+        $category_id= $task->category_id;
+        
+        $tasks = Task::where('category_id', $category_id)->orderBy('order', 'asc')->get();
+        for ($i=$task->order; $i < count($tasks); $i++) { 
+            $tasks[$i]->order = $tasks[$i]->order - 1;
+            $tasks[$i]->save();
+        }
 
         $task->delete();
 
