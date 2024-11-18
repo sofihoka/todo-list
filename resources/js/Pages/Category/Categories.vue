@@ -69,14 +69,14 @@ let taskDragId = null
       event.preventDefault();
     }
 
-function onDrop(index,tasks,order,taskid) {
+function onDrop(index,tasks,order,taskid, categoryid) {
     console.log("taskDragId "+ taskDragId,"taskid: "+taskid)
   if (draggedIndex !== null && draggedIndex !== index) {
     const draggedItem = tasks[draggedIndex];
     tasks.splice(draggedIndex, 1); 
     tasks.splice(index, 0, draggedItem); 
   }
-  axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid}).then((response) => {
+  axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
         console.log("Recurso actualizado con éxito", response.data);
           //window.location.reload()
         }).catch((error) => {
@@ -116,7 +116,7 @@ function onDrop(index,tasks,order,taskid) {
                         draggable="true"
                         @dragstart="startDrag(index,task.id)"
                         @dragover.prevent="onDragOver"
-                        @drop="onDrop(index,tasks,task.order, task.id)">
+                        @drop="onDrop(index,tasks,task.order, task.id, categoryid)">
                     <div class="bg-slate-100 taskList grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
                         <div class="col-span-5">
                             {{ task.description }}
