@@ -58,7 +58,6 @@ let taskDragId = null
 let categoryDrag = null;
 
     const startDrag = (index, task_id, categoryid) =>{
-        console.log("dormiendooo: "+task_id);
         taskDragId = task_id
         categoryDrag = categoryid
         //console.log("drap category" +category_id)
@@ -80,7 +79,7 @@ function onDrop(index,tasks,order,taskid, categoryid) {
         
         axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
             console.log("Recurso actualizado con éxito", response.data)
-            //window.location.reload()
+            window.location.reload()
         }).catch((error) => {
             console.error("Error al actualizar el recurso: ", error)
         })
@@ -126,7 +125,8 @@ function onDrop(index,tasks,order,taskid, categoryid) {
                         @drop="onDrop(index,tasks,task.order, task.id, categoryid)">
                     <div class="bg-slate-100 taskList grid grid-cols-6  gap-2 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2 shadow-md rounded-lg" draggable="true">
                         <div class="col-span-5">
-                            {{ task.description }}
+                            {{ task.description }}- 
+                            {{ task.order }}
                         </div>
                         <div class="place-self-end">
                             <button @click="destroyTask(task.id)" class="text-stone-500 font-bold  rounded focus:outline-none focus:shadow-outline" type="button">
