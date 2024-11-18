@@ -83,11 +83,11 @@ class TaskController extends Controller
         $taskDrag = Task::find($taskDragId);
         $taskDrop = Task::find($taskDropId);
 
-        $taskDropCreat = $taskDrop->created_at;
-        $taskDragCreat= $taskDrag->created_at;
+        $taskDropOrder = $taskDrop->order;
+        $taskDragOrder= $taskDrag->order;
 
-        $taskDrag->created_at = $taskDropCreat;
-        $taskDrop->created_at = $taskDragCreat;
+        $taskDrag->order = $taskDropOrder;
+        $taskDrop->order = $taskDragOrder;
         $taskDrag ->save();
         $taskDrop ->save();
 

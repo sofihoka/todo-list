@@ -12,10 +12,22 @@ class CategoryController extends Controller
 {
     public function index($panelid){
         $panel = Panel::with('categories.tasks')->findOrFail($panelid);
+        $panel->load(['categories.tasks' => function ($query) {
+            $query->orderBy('order', 'asc');
+        }]);
         //dd($panel);
+        /*$panel = Panel::where('id', $panelid)
+        ->with(['categories'])
+        ->with(['tasks']);*/
+
         $panelName = $panel -> name;
         $categories = $panel->categories;
-        
+        //$tasks = $panel->tasks;
+
+        /*foreach ($categories as $key => $category) {
+                dump($category->id);
+        }
+        //dd( $panel->$relations);*/
 
         $panelid = intval($panelid); 
           return Inertia::render('Category/Category_index', [
