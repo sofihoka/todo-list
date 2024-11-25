@@ -125,6 +125,7 @@ class TaskController extends Controller
         $taskDropOrder = $taskDrop->order;
         
         $category = Category::with('tasks')->findOrFail($categoryid);
+        
         $category->load(['tasks' => function ($query) {
             $query->orderBy('order', 'asc');
         }]);
@@ -143,8 +144,8 @@ class TaskController extends Controller
         }
 
         $taskDrag ->save();
-
-        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
+         //Inertia::location(route('category', ['id' => $category->panel_id]));  
+         return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
     }
 
 }

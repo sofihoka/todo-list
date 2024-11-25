@@ -6,6 +6,8 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import axiosInstance  from './plugins/axios';
+import { MotionPlugin } from '@vueuse/motion'
+
 
 
 
@@ -20,7 +22,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue);
             app.config.globalProperties.$axios = axiosInstance;
-            // mont app
+            app.use(MotionPlugin);
             app.mount(el);
             return app;
     },
