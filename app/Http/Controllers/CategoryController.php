@@ -41,13 +41,20 @@ class CategoryController extends Controller
         return view('category.create_category');
     }
 
-    //Save a task in a DB
     public function store(Request $request){
         
         $panelid = $request ->input('panelid');
         //validate date
         //same name
-        Category::create(['name'=>$request ->input('name'),'panel_id'=> $panelid]);
+        $maxOrder = Category::where('panel_id', $panelid)->max('order_category');
+        if( $maxOrder == null){
+            $maxOrder=1;
+        }else{
+            $maxOrder++;
+        }
+        Category::create(['name'=>$request ->input('name')
+        ,'panel_id'=> $panelid,
+        'order_category'=>$maxOrder]);
 
         return Inertia::location(route('category', ['id' => $panelid]));
     }
@@ -57,6 +64,14 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         $panelid = $category->panel_id;
+
+        $categories = Category::where('panel_id', $panelid)->orderBy('order_category', 'asc')->get();
+        //dd($categories);
+        for ($i=$category->order_category; $i < count($categories); $i++) { 
+            $categories[$i]->order_category = $categories[$i]->order_category - 1;
+            $categories[$i]->save();
+        }
+
         $category->delete();
             return Inertia::location(route('category', ['id' => $panelid]));
            

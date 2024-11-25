@@ -5,6 +5,8 @@
     import { Link } from '@inertiajs/vue3';
     import Banner from '@/Components/Banner.vue';
     import AppLayout from '@/Layouts/AppLayout.vue';
+    import { Inertia } from '@inertiajs/inertia';
+    import Breadcrumb from '@/Components/Breadcrumb.vue';
 
     export default {
     components: {
@@ -65,7 +67,7 @@ function onDrop(index,categories,category,panelid) {
     if(category != categoryDrag){
       axios.put('/category/editCategoryTask', { task: taskId, drogsTaskId : drogsTaskId, category_id: category, panelid : panelid }).then((response) => {
         console.log("Recurso actualizado con éxito", response.data);
-        window.location.reload()
+        Inertia.visit(window.location.href);
         }).catch((error) => {
         console.error("Error al actualizar el recurso: ", error);
         });
@@ -85,32 +87,28 @@ function onDrop(index,categories,category,panelid) {
 </script>
 
 <script setup>
-  defineProps({categories: Array,　panelName　:String, panelid :Number, tasks: Array})
+  defineProps({categories: Array,　panelName　:String, panelid :Number, tasks: Array })
 </script>
 
 <template>
   <AppLayout title="Dashboard">
-  <div class="overflow-auto w-full py-4 px-6 shadow-md flex bg-zinc-300	">
-      <h1 class="text-xl font-semibold ">
-        {{panelName}}
-      </h1>
-  </div>
-  <div class="min-h-screen  bg-indigo-500	overflow-auto" >
-    <div class="flex" >
-      <Categories :panelid="panelid"
-      :tasks="category.tasks"
-      v-for="(category, index) in categories"
-              :categoryid="category.id"
-              :name="category.name"
-              draggable="true"
-              @dragsTask="dragsTask"
-              @drogsTask="drogsTask"
-              @dragstart="startDrag(index, category.id)"
-              @dragover.prevent="onDragOver"
-              @drop="onDrop(index,categories, category.id,panelid)"
-      ></Categories>    
-      <Create :type="typeFather" :route="routeFather" :panelid="panelid" /> 
-    </div>
-  </div>  
-</AppLayout>
+    <Breadcrumb :title=panelName></Breadcrumb>
+    <div class="min-h-screen  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500	overflow-auto" >
+      <div class="flex max-sm:flex-col ">
+        <Categories :panelid="panelid"
+        :tasks="category.tasks"
+        v-for="(category, index) in categories"
+                :categoryid="category.id"
+                :name="category.name"
+                draggable="true"
+                @dragsTask="dragsTask"
+                @drogsTask="drogsTask"
+                @dragstart="startDrag(index, category.id)"
+                @dragover.prevent="onDragOver"
+                @drop="onDrop(index,categories, category.id,panelid)"
+        ></Categories>    
+        <Create :type="typeFather" :route="routeFather" :panelid="panelid" /> 
+      </div>
+    </div>  
+  </AppLayout>
 </template>

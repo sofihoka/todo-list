@@ -16,6 +16,6 @@ class Category extends Model
         return $this->belongsTo(Panel::class);
     }
 
-    protected $fillable = ['name','panel_id'];
+    protected $fillable = ['name','panel_id','order_category'];
 
 }

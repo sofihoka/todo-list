@@ -4,7 +4,7 @@
     import Panel from './Panel.vue';
   import Create from '@/Components/Create.vue';
   import AppLayout from '@/Layouts/AppLayout.vue';
-
+  import Breadcrumb from '@/Components/Breadcrumb.vue';
 
     export default {
   components: {
@@ -16,6 +16,7 @@
 
 const typeFather= 'Panel';
 const routeFather= '/create_panel';
+const href =route().current();
 </script>
 
 <script setup>
@@ -24,11 +25,7 @@ const routeFather= '/create_panel';
 
 <template class="bg-blue-600">
    <AppLayout title="Dashboard">
-      <div class="w-all py-4 px-6 shadow-md flex bg-zinc-300	">
-            <h1 class="text-xl font-semibold ">
-              Panels
-            </h1>
-      </div>
+    <Breadcrumb title="Panels"></Breadcrumb>
       <div class="bg-indigo-500">
         <div class="flex min-h-screen  bg-indigo-500	overflow-auto">
           <Panel

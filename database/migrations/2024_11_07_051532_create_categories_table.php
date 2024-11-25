@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table ->string('name');            
             $table->unsignedBigInteger('panel_id');
+            $table->integer('order_category')->nullable();
             $table->timestamps();
-            //$table->foreign('panel_id')->references('id')->on('panels');
+            $table->foreign('panel_id')->references('id')->on('panels')->onDelete('cascade');
         });
            // Añadimos la columna category_id en la tabla tasks
            /*Schema::table('tasks', function (Blueprint $table) {
@@ -31,8 +32,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('categories');
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->dropColumn('category_id');
-        });
     }
 };
