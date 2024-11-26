@@ -4,30 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\Category;
-use App\Models\Panel;
+use App\Models\Panel; 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
     public function index($panelid){
-        $panel = Panel::with('categories.tasks')->findOrFail($panelid);
-        $panel->load(['categories.tasks' => function ($query) {
-            $query->orderBy('order', 'asc');
-        }]);
-        //dd($panel);
-        /*$panel = Panel::where('id', $panelid)
-        ->with(['categories'])
-        ->with(['tasks']);*/
-
+        $panel = Panel::with([
+            'categories' => function ($query) {
+                $query->orderBy('order_category', 'asc')
+                      ->with(['tasks' => function ($query) {
+                          $query->orderBy('order', 'asc');
+                      }]);
+            }
+        ])->findOrFail($panelid);
+        
         $panelName = $panel -> name;
         $categories = $panel->categories;
-        //$tasks = $panel->tasks;
-
-        /*foreach ($categories as $key => $category) {
-                dump($category->id);
-        }
-        //dd( $panel->$relations);*/
 
         $panelid = intval($panelid); 
           return Inertia::render('Category/Category_index', [
@@ -66,15 +60,32 @@ class CategoryController extends Controller
         $panelid = $category->panel_id;
 
         $categories = Category::where('panel_id', $panelid)->orderBy('order_category', 'asc')->get();
-        //dd($categories);
         for ($i=$category->order_category; $i < count($categories); $i++) { 
             $categories[$i]->order_category = $categories[$i]->order_category - 1;
             $categories[$i]->save();
         }
 
         $category->delete();
-            return Inertia::location(route('category', ['id' => $panelid]));
-           
-            
+
+    }
+   
+    public function editCategoryOrder(Request $request){
+        //categories: categories, panelid : panelid,category : category,categoryDrag : categoryDrag
+        $categoryId = $request->input('category');
+        $categoryDragId = $request->input('categoryDrag');
+        $category = Category::find($categoryId);
+        $categoryOrder = $category->order_category;
+       
+        $categoryDrag= Category::find($categoryDragId);
+        $categoryDragOrder = $categoryDrag->order_category;
+
+        $category->order_category =  $categoryDragOrder;
+        $categoryDrag->order_category = $categoryOrder;
+
+        $category->save();
+        $categoryDrag ->save();
+
+        return response()->json(['success' => true, 'message' => 'success!']);
+    
     }
 }

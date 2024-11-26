@@ -11,7 +11,7 @@ const href =route().current();
 
 <template>
     <Link :href="href" class=" text-xl font-semibold text-white">
-        <span class=" py-4 px-6 shadow-md flex bg-blue-950">
+        <span class=" py-4 px-6 shadow-md flex bg-blue-950 rounded-t-lg">
             {{ title }}
         </span>
     </Link>

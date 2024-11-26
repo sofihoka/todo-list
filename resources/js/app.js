@@ -10,7 +10,6 @@ import { MotionPlugin } from '@vueuse/motion'
 
 
 
-
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 

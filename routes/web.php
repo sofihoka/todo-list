@@ -43,6 +43,7 @@ Route::middleware([
 
     Route::delete('/delete_category/{id}', [CategoryController::class, 'destroy'])->name('delete_category');
 
+    Route::put('/category/editCategoryOrder', [CategoryController::class, 'editCategoryOrder'])->name('edit.category.order');
     //Route::post('/create_category', [CategoryController::class, 'index'])->name('create_category');
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,11 +52,12 @@ Route::middleware([
 
     Route::delete('/delete_task/{id}', [TaskController::class, 'destroy'])->name('delete_task');
     
-    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////editCategoryOrder
 
     Route::put('/category/editCategoryTask', [TaskController::class, 'changeTaskCategory'])->name('edit.category.task');
 
     Route::put('/category/editOrderTask', [TaskController::class, 'editOrderTask'])->name('edit.Order.task');
+
 
     
 });

@@ -1,5 +1,5 @@
-<script>
-    import { defineProps } from 'vue'
+<script setup >
+    import { defineProps, ref } from 'vue'
     import Create from '@/Components/Create.vue';
     import Categories from './Categories.vue';
     import { Link } from '@inertiajs/vue3';
@@ -8,29 +8,21 @@
     import { Inertia } from '@inertiajs/inertia';
     import Breadcrumb from '@/Components/Breadcrumb.vue';
 
-    export default {
-    components: {
+    
+    const components = {
       Create,
       Categories
-    },
+    }
 
-    methods: {
-    startDrag(evt, item) {
-      evt.dataTransfer.dropEffect = 'move'
-      evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('itemID', item.id)
-    },
-    onDrop(evt, list) {
-      const itemID = evt.dataTransfer.getData('itemID')
-      const item = this.items.find((item) => item.id == itemID)
-      item.list = list
-    },
-  }
-  // Otros datos y opciones del componente
-};
+  const props = defineProps({categories: Array,　panelName　:String, panelid :Number, tasks: Array })
+  const categoriesList = ref([])
+  categoriesList.value = props.categories
+  const addx = () => (
+    categoriesList.value = props.categories
+  )
 
-const typeFather= 'Category';
-const routeFather= '/create_category'
+  const typeFather= 'Category';
+  const routeFather= '/create_category'
 
     let draggedIndex = null
     let isTask =false
@@ -62,12 +54,21 @@ function onDrop(index,categories,category,panelid) {
     const draggedItem = categories[draggedIndex];
     categories.splice(draggedIndex, 1); 
     categories.splice(index, 0, draggedItem); // Insertarlo en la nueva posición
+    console.log("estoy aca")
+    axios.put('/category/editCategoryOrder', {category : category,categoryDrag : categoryDrag }).then((response) => {
+        //categories = response.data.categories
+       // categoriesList.value = categories
+        }).catch((error) => {
+        console.error("Error al actualizar el recurso: ", error);
+        });
+
   }else{ 
     /*changed the "category" of the "tasks" */ 
     if(category != categoryDrag){
       axios.put('/category/editCategoryTask', { task: taskId, drogsTaskId : drogsTaskId, category_id: category, panelid : panelid }).then((response) => {
-        console.log("Recurso actualizado con éxito", response.data);
-        Inertia.visit(window.location.href);
+        categories = response.data.categories
+        categoriesList.value = categories
+        console.log(categories);
         }).catch((error) => {
         console.error("Error al actualizar el recurso: ", error);
         });
@@ -86,9 +87,6 @@ function onDrop(index,categories,category,panelid) {
 
 </script>
 
-<script setup>
-  defineProps({categories: Array,　panelName　:String, panelid :Number, tasks: Array })
-</script>
 
 <template>
   <AppLayout title="Dashboard">
@@ -97,7 +95,7 @@ function onDrop(index,categories,category,panelid) {
       <div class="flex max-sm:flex-col ">
         <Categories :panelid="panelid"
         :tasks="category.tasks"
-        v-for="(category, index) in categories"
+        v-for="(category, index) in categoriesList"
                 :categoryid="category.id"
                 :name="category.name"
                 draggable="true"
