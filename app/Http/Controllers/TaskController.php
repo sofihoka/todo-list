@@ -13,8 +13,8 @@ class TaskController extends Controller
 {
     //Mostrar todas las tareas
     public function index(){
-        $task = Task::all()->orderBy('order', 'asc');
-        return view('task.index', compact(task));
+        $tasks = Task::all()->orderBy('order', 'asc');
+        return view('task.index', compact($tasks));
     }
 
     //Mostrar el formulario para crear una nueva tarea
@@ -62,9 +62,7 @@ class TaskController extends Controller
             $tasks[$i]->save();
         }
 
-        $task->delete();
-
-        return Inertia::location(route('category', ['id' => $panelId]));          
+        $task->delete();    
 
     }
 
@@ -107,8 +105,18 @@ class TaskController extends Controller
         $task->category_id = $category_id;
         $task ->save();
 
+        $panel = Panel::with([
+            'categories' => function ($query) {
+                $query->orderBy('order_category', 'asc')
+                      ->with(['tasks' => function ($query) {
+                          $query->orderBy('order', 'asc');
+                      }]);
+            }
+        ])->findOrFail($panelid);
+        
+        $categories = $panel->categories;
 
-        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente' , 'category_id' => $task_category]);
+        return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente' , 'categories' => $categories]);
         //return Inertia::location(route('category', ['id' => $panelid]));            
 
     }

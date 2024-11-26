@@ -5,7 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    // Relación: Cada tarea pertenece a una categoria
+    protected $fillable = ['name','panel_id','order_category'];
+    
     public function tasks()
     {
         return $this->hasMany(Task::class);
@@ -16,6 +17,5 @@ class Category extends Model
         return $this->belongsTo(Panel::class);
     }
 
-    protected $fillable = ['name','panel_id','order_category'];
 
 }
