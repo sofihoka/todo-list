@@ -211,9 +211,6 @@ onBeforeUnmount(() => {
                         <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                             Add
                         </button>
-                        <!--  @error('description')
-                            <div class="text-red-500 text-sm" id='description-error'>{{ $message }}</div>
-                        @enderror-->  
                     </div>
                 </form>         
             <!-- End Form to Add Task -->
