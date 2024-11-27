@@ -54,7 +54,6 @@ function onDrop(index,categories,category,panelid) {
     const draggedItem = categories[draggedIndex];
     categories.splice(draggedIndex, 1); 
     categories.splice(index, 0, draggedItem); // Insertarlo en la nueva posición
-    console.log("estoy aca")
     axios.put('/category/editCategoryOrder', {category : category,categoryDrag : categoryDrag }).then((response) => {
         //categories = response.data.categories
        // categoriesList.value = categories
@@ -68,7 +67,6 @@ function onDrop(index,categories,category,panelid) {
       axios.put('/category/editCategoryTask', { task: taskId, drogsTaskId : drogsTaskId, category_id: category, panelid : panelid }).then((response) => {
         categories = response.data.categories
         categoriesList.value = categories
-        console.log(categories);
         }).catch((error) => {
         console.error("Error al actualizar el recurso: ", error);
         });
@@ -84,14 +82,13 @@ function onDrop(index,categories,category,panelid) {
   isTask =false;
 }
 
-
 </script>
 
 
 <template>
   <AppLayout title="Dashboard">
     <Breadcrumb :title=panelName></Breadcrumb>
-    <div class="min-h-screen  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500	overflow-auto" >
+    <div class="min-h-screen  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500	overflow-auto">
       <div class="flex max-sm:flex-col ">
         <Categories :panelid="panelid"
         :tasks="category.tasks"

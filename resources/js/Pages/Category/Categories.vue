@@ -50,7 +50,8 @@ const props = defineProps({
 const form = reactive({
     description: '',
     categoryid: props.categoryid,
-    panelid:props.panelid
+    panelid:props.panelid,
+    tasks:props.tasks
 })
 
 function submit() {
@@ -64,36 +65,36 @@ const emit = defineEmits(['dragsTask','drogsTask'])
 
 const internalInstance = getCurrentInstance();
 const axios = internalInstance.appContext.config.globalProperties.$axios;
-let taskDragId = null
 let categoryDrag = null;
 
 
-    const startDrag = (index, task_id, event) =>{
+    const startDrag = (index, task_id,category, event) =>{
         
+        draggedTaskId.value = task_id;
         const clone = event.target.cloneNode(true);
         
         clone.style.position = 'absolute';
-        console.log(clone);
         
         document.body.appendChild(clone);
         event.dataTransfer.setDragImage(clone, 0, 0)
         emit('dragsTask', task_id)
      
         setTimeout(() => {
-    document.body.removeChild(clone); // Eliminar el clon después de arrastrar
-  }, 0);
-  
-     draggedTaskId.value = task_id;
+            document.body.removeChild(clone); // Eliminar el clon después de arrastrar
+        }, 0);
+    categoryDrag = category
       draggedIndex = index;
     }
 
     function onDragOver(event,taskid,tasks,task_order) { 
-      
+        const taskDiv = taskRefs.value[taskid];
+        taskDiv.classList.add('h-10');
+       // console.log(taskDiv);
     
-        event.preventDefault();
+       event.preventDefault();
     }
     function ondragleave(taskid){
-        //const taskDiv = taskRefs.value[taskid];
+        const taskDiv = taskRefs.value[taskid];
             console.log("dragleave");
            // taskDiv.classList.remove('h-10');
          //  const taskDiv2 = taskRefs.value["task_"+taskid];
@@ -109,18 +110,20 @@ function onDrop(index,tasks,taskid, categoryid) {
         tasks.splice(draggedIndex, 1)
         tasks.splice(index, 0, draggedItem)
         
-        axios.put('/category/editOrderTask', { taskDragId: taskDragId, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
+        axios.put('/category/editOrderTask', { taskDragId: draggedTaskId.value, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
             console.log("Recurso actualizado con éxito", response.data)
+            tasks = response.data.tasks 
             
         }).catch((error) => {
             console.error("Error al actualizar el recurso: ", error)
         })
     }else{
+        console.log();
         emit('drogsTask', taskid)        
     }
-    draggedTaskId.value = null; // Restablece el ID
-  draggedIndex = null
-  categoryDrag=null
+    draggedTaskId.value = null;
+    draggedIndex = null
+    categoryDrag=null
 }
 
  let isToggleForm=false;
@@ -165,18 +168,19 @@ onBeforeUnmount(() => {
             <!-- @foreach($category->taskds as $task)   -->
                 <form v-for=" (task, index) in tasks" > 
                     <div 
-                        :ref="(el) => ( taskRefs[task.id] = el)" :id="task.id"
+                        
                         :key="task.id"
                         :class="[ 
-                            draggedTaskId === task.id ? ' h-0 rounded-none opacity-0' : 'opacity-100 mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2',
+                            draggedTaskId === task.id ? ' h-0 rounded-none opacity-5' : 'opacity-100',
                         
                             ]"
-                            @dragstart="startDrag(index,task.id,$event)"                
+                            @dragstart="startDrag(index,task.id,categoryid,$event)"                
                             draggable="true"
                             @dragleave="ondragleave(task.id)"
                             @dragover.prevent="onDragOver($event,task.id,tasks,task.order)"
-                            @drop="onDrop(index,tasks,task.order, task.id, categoryid)"
-                            class="bg-slate-100 taskList grid grid-cols-6 shadow-md rounded-lg mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2">
+                            @drop="onDrop(index,tasks, task.id, categoryid)">
+                            <div :ref="(el) => ( taskRefs[task.id] = el)" :id="task.id"></div>   
+                        <div class="bg-slate-100 taskList grid grid-cols-6 shadow-md rounded-lg mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2">
                             <div class="col-span-5 text-cyan-950">
                                 {{ task.description }}
                                 <!--- 
@@ -190,6 +194,7 @@ onBeforeUnmount(() => {
                                 </button>
                             </div>    
                         </div>
+                    </div>
                         <div ref="lastTask"></div>
                     </form>
                     <div class="h-1"></div>    

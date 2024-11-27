@@ -76,7 +76,6 @@ class TaskController extends Controller
         $drogsTask = Task::find($drogsTaskId);
         
         $_order = $task->order;
-
         if($drogsTaskId !=null){
             $tasksNewCategory = Task::where('category_id',$drogsTask ->category_id)->orderBy('order', 'asc')->get();  
             for ($i=($drogsTask->order) - 1; $i < count($tasksNewCategory); $i++) { 
@@ -123,10 +122,10 @@ class TaskController extends Controller
 
     public function editOrderTask(Request $request)
     { //{ taskDragId: taskDragId, index : index,  taskDropId : taskDropId}
+        // task: taskId, drogsTaskId : drogsTaskId, category_id: category, panelid : panelid 
         $taskDragId = $request->input('taskDragId'); 
         $taskDropId = $request->input('taskDropId'); 
         $categoryid = $request->input('categoryid');
-
         $taskDrag = Task::find($taskDragId);
         $taskDrop = Task::find($taskDropId);
         $taskDragOrder= $taskDrag->order;
@@ -150,10 +149,10 @@ class TaskController extends Controller
                 $tasks[$i]->save();
             }
         }
-
+        
         $taskDrag ->save();
          //Inertia::location(route('category', ['id' => $category->panel_id]));  
-         return response()->json(['success' => true, 'message' => 'Categoría actualizada correctamente']);
+         return response()->json(['success' => true, 'message' => 'Success order task']);
     }
 
 }
