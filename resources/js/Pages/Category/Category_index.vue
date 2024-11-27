@@ -88,8 +88,8 @@ function onDrop(index,categories,category,panelid) {
 <template>
   <AppLayout title="Dashboard">
     <Breadcrumb :title=panelName></Breadcrumb>
-    <div class="min-h-screen  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500	overflow-auto">
-      <div class="flex max-sm:flex-col ">
+    <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500	overflow-auto">
+      <div class="flex max-sm:flex-col " draggable="true">
         <Categories :panelid="panelid"
         :tasks="category.tasks"
         v-for="(category, index) in categoriesList"
