@@ -149,10 +149,9 @@ class TaskController extends Controller
                 $tasks[$i]->save();
             }
         }
-        
         $taskDrag ->save();
-         //Inertia::location(route('category', ['id' => $category->panel_id]));  
-         return response()->json(['success' => true, 'message' => 'Success order task']);
+        
+         return response()->json(['success' => true, 'message' => 'Success order task','tasks' => $taskDrag]);
     }
 
 }
