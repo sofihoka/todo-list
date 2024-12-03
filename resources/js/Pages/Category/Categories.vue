@@ -7,6 +7,7 @@ import { useMotions } from '@vueuse/motion';
 import { nextTick , ref,onMounted, onBeforeUnmount} from 'vue';
 import { useMotion } from '@vueuse/motion';
 
+console.log(window.location.origin)
 
 const showForm = ref(false);
 const addTaskForm = ref({ description: '' });
@@ -25,10 +26,14 @@ const destroyTask = (id) =>{
     Inertia.delete(route('delete_task',id))
 }
 
+defineExpose({
+    onDropTask
+});
+
 const props = defineProps({
     categoryid: {
     type: Number,
-    default: null  // Esto permite que panelId sea panelid
+    default: null  
   },
   description:{
     type: String,
@@ -44,7 +49,11 @@ const props = defineProps({
   },
   panelid: {
     type: Number,
-   default: null  // Esto permite que  sea panelid
+   default: null 
+  },
+  draggedTaskId: {
+    type: Number,
+   default: null  
   }
 });
 
@@ -66,15 +75,18 @@ const emit = defineEmits(['dragsTask','drogsTask'])
 
 const internalInstance = getCurrentInstance();
 const axios = internalInstance.appContext.config.globalProperties.$axios;
+axios.defaults.baseURL = 'http://127.0.0.1:8001/';
 let categoryDrag = null;
 
 
     const startDrag = (index, task_id,category, event) =>{
-        
+        console.log("startDrag"+categoryDrag)
+        //
         draggedTaskId.value = task_id;
         const clone = event.target.cloneNode(true);
         
         clone.style.position = 'absolute';
+        clone.classList.add('opacity-100')
         
         document.body.appendChild(clone);
         event.dataTransfer.setDragImage(clone, 0, 0)
@@ -84,11 +96,11 @@ let categoryDrag = null;
             document.body.removeChild(clone); // Eliminar el clon después de arrastrar
         }, 0);
         categoryDrag = category
+        console.log("startDrag"+categoryDrag)
         draggedIndex = index;
     }
 
     function allPreventDrop(){
-        console.log("hungryyy")
         Event.preventDefault();
     }
 
@@ -108,37 +120,34 @@ let categoryDrag = null;
     
     function ondragleave(taskid){
         const taskDiv = taskRefs.value[taskid];
-            console.log("dragleave");
             setTimeout(() => {
             taskDiv.classList.remove('h-10');
             
         taskDiv.classList.remove('bg-slate-300');
         taskDiv.classList.remove('rounded-lg');
         
-            }, 600);
+            }, 300);
            // taskDiv.classList.remove('h-10');
          //  const taskDiv2 = taskRefs.value["task_"+taskid];
     }
 
 
-    
-
-   
-function onDrop(index,tasks,taskid, categoryid) {
+function onDropTask(index,tasks,taskid, categoryid) {
+    console.log(categoryid+'onDropTask/editOrderTask'+categoryDrag)
     if (draggedIndex !== null && draggedIndex !== index && categoryid == categoryDrag) {
+        console.log(categoryid+'acaaa no'+categoryDrag)
         const draggedItem = tasks[draggedIndex]
         tasks.splice(draggedIndex, 1)
         tasks.splice(index, 0, draggedItem)
-        
         axios.put('/category/editOrderTask', { taskDragId: draggedTaskId.value, index : index,  taskDropId : taskid, categoryid : categoryid}).then((response) => {
             console.log("Recurso actualizado con éxito", response.data)
             tasks = response.data.tasks 
             
+            draggedTaskId = null
         }).catch((error) => {
             console.error("Error al actualizar el recurso: ", error)
         })
     }else{
-        console.log();
         emit('drogsTask', taskid)        
     }
     draggedTaskId.value = null;
@@ -188,8 +197,7 @@ onBeforeUnmount(() => {
             </div>
                 <!-- @foreach($category->taskds as $task)   -->
                     <form v-for=" (task, index) in tasks" > 
-                        <div 
-                            
+                        <div                             
                             :key="task.id"
                             :class="[ 
                                 draggedTaskId === task.id ? ' h-0 rounded-none opacity-0' : 'opacity-100',
@@ -198,13 +206,17 @@ onBeforeUnmount(() => {
                                 @dragstart="startDrag(index,task.id,categoryid,$event)"                
                                 draggable="true"                           
                                 @dragover.prevent="onDragOver($event,task.id,tasks,task.order)"
-                                @drop="onDrop(index,tasks, task.id, categoryid)">
+                                @drop="onDropTask(index,tasks, task.id, categoryid)"
+                                @update="draggedTaskId = draggedTaskId"
+                                >
                                 <div 
                                 @dragleave="ondragleave(task.id)"
                                 :ref="(el) => ( taskRefs[task.id] = el)" :id="task.id"></div>   
                             <div class="bg-slate-100 taskList grid grid-cols-6 shadow-md rounded-lg mr-2 ml-2 mb-2 mt-2 pl-2 pb-2 pt-2">
                                 <div class="col-span-5 text-cyan-950" >
                                     {{ task.description }}
+                                    draggedTaskId={{ draggedTaskId }}
+                                    taskID= {{ task.id }}
                                     <!--- 
                                     {{ task.order }}-->
                                 </div>

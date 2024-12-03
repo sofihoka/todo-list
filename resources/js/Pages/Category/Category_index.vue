@@ -15,11 +15,11 @@
     }
 
   const props = defineProps({categories: Array,　panelName　:String, panelid :Number, tasks: Array })
+
+  const draggedTaskId = ref(null)
+  
   const categoriesList = ref([])
   categoriesList.value = props.categories
-  const addx = () => (
-    categoriesList.value = props.categories
-  )
 
   const typeFather= 'Category';
   const routeFather= '/create_category'
@@ -30,6 +30,8 @@
     let drogsTaskId = null
 
     const dragsTask = (task_id) =>{
+      console.log("holaaaa")
+      draggedTaskId = task_id
       isTask=true;
       taskId = task_id;
     }
@@ -48,19 +50,19 @@
       event.preventDefault();
     }
 
-
 function onDrop(index,categories,category,panelid) {
+  
+  console.log('onDrop')
   if (draggedIndex !== null && draggedIndex !== index && isTask==false) {
-    const draggedItem = categories[draggedIndex];
-    categories.splice(draggedIndex, 1); 
-    categories.splice(index, 0, draggedItem); // Insertarlo en la nueva posición
+    const draggedItem = categories[draggedIndex]
+    categories.splice(draggedIndex, 1)
+    categories.splice(index, 0, draggedItem)
     axios.put('/category/editCategoryOrder', {category : category,categoryDrag : categoryDrag }).then((response) => {
         //categories = response.data.categories
        // categoriesList.value = categories
         }).catch((error) => {
-        console.error("Error al actualizar el recurso: ", error);
+        console.error("Error: ", error);
         });
-
   }else{ 
     /*changed the "category" of the "tasks" */ 
     if(category != categoryDrag){
@@ -68,14 +70,20 @@ function onDrop(index,categories,category,panelid) {
         categories = response.data.categories
         categoriesList.value = categories
         }).catch((error) => {
-        console.error("Error al actualizar el recurso: ", error);
+        console.error("Error: ", categoryDrag+" //// "+category)
         });
+        categoryDrag = null
+    }else{
+      console.log('Else  /category/editCategoryTask')
+      /*drop in the same category but outside <Categories> @drop="onDropTask(index,tasks, task.id, categoryid)">*/
+   
+
     }
 
 
   }
 
-  categoryDrag = null;
+  //categoryDrag = null;
   draggedIndex = null;
   drogsTaskId = null;
   taskId = null;
@@ -90,6 +98,7 @@ function onDrop(index,categories,category,panelid) {
     <Breadcrumb :title=panelName></Breadcrumb>
     <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500	overflow-auto">
       <div class="flex max-sm:flex-col " draggable="true">
+        {{ draggedTaskId }}
         <Categories :panelid="panelid"
         :tasks="category.tasks"
         v-for="(category, index) in categoriesList"
