@@ -143,7 +143,7 @@ function onDropTask(index,tasks,taskid, categoryid) {
             console.log("Recurso actualizado con éxito", response.data)
             tasks = response.data.tasks 
             
-            draggedTaskId = null
+            draggedTaskId.value = null
         }).catch((error) => {
             console.error("Error al actualizar el recurso: ", error)
         })

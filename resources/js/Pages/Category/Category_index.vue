@@ -31,7 +31,7 @@
 
     const dragsTask = (task_id) =>{
       console.log("holaaaa")
-      draggedTaskId = task_id
+      draggedTaskId.value= task_id
       isTask=true;
       taskId = task_id;
     }
